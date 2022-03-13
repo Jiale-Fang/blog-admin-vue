@@ -1,27 +1,28 @@
 <template>
   <el-card class="main-card">
     <div class="title">{{ this.$route.name }}</div>
-    <div class="review-menu">
-      <span>状态</span>
-      <span
-        @click="changeReview(null)"
-        :class="isReview == null ? 'active-review' : 'review'"
-      >
-        全部
-      </span>
-      <span
-        @click="changeReview(1)"
-        :class="isReview == 1 ? 'active-review' : 'review'"
-      >
-        正常
-      </span>
-      <span
-        @click="changeReview(0)"
-        :class="isReview == 0 ? 'active-review' : 'review'"
-      >
-        审核中
-      </span>
-    </div>
+    <!--    <div class="review-menu">-->
+    <!--      <span>状态</span>-->
+    <!--      <span-->
+    <!--        @click="changeReview(null)"-->
+    <!--        :class="isReview == null ? 'active-review' : 'review'"-->
+    <!--      >-->
+    <!--        全部-->
+    <!--      </span>-->
+    <!--      <span-->
+    <!--        @click="changeReview(1)"-->
+    <!--        :class="isReview == 1 ? 'active-review' : 'review'"-->
+    <!--      >-->
+    <!--        正常-->
+    <!--      </span>-->
+    <!--      <span-->
+    <!--        @click="changeReview(0)"-->
+    <!--        :class="isReview == 0 ? 'active-review' : 'review'"-->
+    <!--      >-->
+    <!--        审核中-->
+    <!--      </span>-->
+    <!--    </div>-->
+    <br />
     <!-- 表格操作 -->
     <div class="operation-container">
       <el-button
@@ -32,15 +33,6 @@
         @click="deleteFlag = true"
       >
         批量删除
-      </el-button>
-      <el-button
-        type="success"
-        size="small"
-        icon="el-icon-success"
-        :disabled="messageIdList.length == 0"
-        @click="updateMessageReview(null)"
-      >
-        批量通过
       </el-button>
       <!-- 数据筛选 -->
       <div style="margin-left:auto">
@@ -84,12 +76,7 @@
         width="150"
       />
       <el-table-column prop="messageContent" label="留言内容" align="center" />
-      <el-table-column
-        prop="ip"
-        label="ip地址"
-        align="center"
-        width="150"
-      />
+      <el-table-column prop="ip" label="ip地址" align="center" width="150" />
       <el-table-column
         prop="ipSource"
         label="ip来源"
@@ -97,12 +84,12 @@
         width="170"
       />
       <!-- 状态 -->
-      <el-table-column prop="isReview" label="状态" width="80" align="center">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.isReview == 0" type="warning">审核中</el-tag>
-          <el-tag v-if="scope.row.isReview == 1" type="success">正常</el-tag>
-        </template>
-      </el-table-column>
+      <!--      <el-table-column prop="isReview" label="状态" width="80" align="center">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-tag v-if="scope.row.isReview == 0" type="warning">审核中</el-tag>-->
+      <!--          <el-tag v-if="scope.row.isReview == 1" type="success">正常</el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column
         prop="createTime"
         label="留言时间"
@@ -129,7 +116,7 @@
           <el-popconfirm
             style="margin-left:10px"
             title="确定删除吗？"
-            @confirm="deleteMessage(scope.row.id)"
+            @confirm="deleteMessage(scope.row.mid)"
           >
             <el-button size="mini" type="danger" slot="reference">
               删除
@@ -188,7 +175,7 @@ export default {
     selectionChange(messageList) {
       this.messageIdList = [];
       messageList.forEach(item => {
-        this.messageIdList.push(item.id);
+        this.messageIdList.push(item.mid);
       });
     },
     searchMessages() {
@@ -210,21 +197,23 @@ export default {
       } else {
         param = { data: this.messageIdList };
       }
-      this.axios.delete("/api/admin/messages", param).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listMessages();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.deleteFlag = false;
-      });
+      this.axios
+        .delete("/api/server/message/admin/delete", param)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listMessages();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.deleteFlag = false;
+        });
     },
     updateMessageReview(id) {
       let param = {};

@@ -216,7 +216,7 @@ export default {
     },
     listLogs() {
       this.axios
-        .get("/api/server/logs/operation", {
+        .get("/api/server/logs/admin/operation", {
           params: {
             currentPage: this.current,
             pageSize: this.size,
@@ -236,21 +236,23 @@ export default {
       } else {
         param = { data: this.logIdList };
       }
-      this.axios.delete("/api/admin/operation/logs", param).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listLogs();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.isDelete = false;
-      });
+      this.axios
+        .delete("/api/server/logs/admin/delete", param)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listLogs();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.isDelete = false;
+        });
     },
     check(optLog) {
       this.optLog = JSON.parse(JSON.stringify(optLog));

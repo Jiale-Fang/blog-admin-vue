@@ -69,7 +69,7 @@
           <el-popconfirm
             title="确定删除吗？"
             style="margin-left:1rem"
-            @confirm="deleteCategory(scope.row.id)"
+            @confirm="deleteCategory(scope.row.typeId)"
           >
             <el-button size="mini" type="danger" slot="reference">
               删除
@@ -108,7 +108,7 @@
       <div class="dialog-title-container" slot="title" ref="categoryTitle" />
       <el-form label-width="80px" size="medium" :model="categoryForm">
         <el-form-item label="分类名">
-          <el-input v-model="categoryForm.categoryName" style="width:220px" />
+          <el-input v-model="categoryForm.typeName" style="width:220px" />
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -135,8 +135,8 @@ export default {
       categoryIdList: [],
       categoryList: [],
       categoryForm: {
-        id: null,
-        categoryName: ""
+        typeId: null,
+        typeName: ""
       },
       current: 1,
       size: 10,
@@ -147,7 +147,7 @@ export default {
     selectionChange(categoryList) {
       this.categoryIdList = [];
       categoryList.forEach(item => {
-        this.categoryIdList.push(item.id);
+        this.categoryIdList.push(item.typeId);
       });
     },
     searchCategories() {
@@ -170,21 +170,23 @@ export default {
       } else {
         param = { data: [id] };
       }
-      this.axios.delete("/api/admin/categories", param).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listCategories();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.isDelete = false;
-      });
+      this.axios
+        .delete("/api/server/type/admin/delete", param)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listCategories();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.isDelete = false;
+        });
     },
     listCategories() {
       const param = {
@@ -192,30 +194,32 @@ export default {
         pageSize: this.size,
         queryString: this.keywords
       };
-      this.axios.post("/api/server/type/adminType", param).then(({ data }) => {
-        this.categoryList = data.data.records;
-        this.count = data.data.total;
-        this.loading = false;
-      });
+      this.axios
+        .post("/api/server/type/admin/typeList", param)
+        .then(({ data }) => {
+          this.categoryList = data.data.records;
+          this.count = data.data.total;
+          this.loading = false;
+        });
     },
     openModel(category) {
       if (category != null) {
         this.categoryForm = JSON.parse(JSON.stringify(category));
         this.$refs.categoryTitle.innerHTML = "修改分类";
       } else {
-        this.categoryForm.id = null;
-        this.categoryForm.categoryName = "";
+        this.categoryForm.typeId = null;
+        this.categoryForm.typeName = "";
         this.$refs.categoryTitle.innerHTML = "添加分类";
       }
       this.addOrEdit = true;
     },
     addOrEditCategory() {
-      if (this.categoryForm.categoryName.trim() == "") {
+      if (this.categoryForm.typeName.trim() == "") {
         this.$message.error("分类名不能为空");
         return false;
       }
       this.axios
-        .post("/api/admin/categories", this.categoryForm)
+        .post("/api/server/type/admin/saveOrUpdate", this.categoryForm)
         .then(({ data }) => {
           if (data.flag) {
             this.$notify.success({

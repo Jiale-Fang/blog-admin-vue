@@ -24,9 +24,6 @@
           <el-avatar :size="40" :src="this.$store.state.avatar" />
           <i class="el-icon-caret-bottom" />
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="setting">
-              <i class="el-icon-s-custom" />个人中心
-            </el-dropdown-item>
             <el-dropdown-item command="logout" divided>
               <i class="iconfont el-icon-mytuichu" />退出登录
             </el-dropdown-item>

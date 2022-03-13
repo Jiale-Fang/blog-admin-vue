@@ -222,7 +222,7 @@ export default {
   methods: {
     listMenus() {
       this.axios
-        .get("/api/server/menu/listMenus", {
+        .get("/api/server/menu/admin/listMenus", {
           params: {
             queryString: this.keywords
           }
@@ -292,37 +292,41 @@ export default {
         this.$message.error("菜单访问路径不能为空");
         return false;
       }
-      this.axios.post("/api/admin/menus", this.menuForm).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: "操作成功"
-          });
-          this.listMenus();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: "操作失败"
-          });
-        }
-        this.addMenu = false;
-      });
+      this.axios
+        .post("/api/server/menu/admin/saveOrUpdateMenu", this.menuForm)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: "操作成功"
+            });
+            this.listMenus();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: "操作失败"
+            });
+          }
+          this.addMenu = false;
+        });
     },
     deleteMenu(id) {
-      this.axios.delete("/api/admin/menus/" + id).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: "删除成功"
-          });
-          this.listMenus();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-      });
+      this.axios
+        .delete("/api/server/menu/admin/delete/" + id)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: "删除成功"
+            });
+            this.listMenus();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+        });
     }
   }
 };

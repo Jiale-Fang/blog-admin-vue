@@ -64,7 +64,7 @@
       <el-table-column prop="blogLink" label="链接地址" align="center" />
       <el-table-column prop="description" label="链接介绍" align="center" />
       <el-table-column
-        prop="isDisable"
+        prop="dataStatus"
         label="是否展示"
         align="center"
         width="100"
@@ -74,8 +74,6 @@
             v-model="scope.row.dataStatus"
             active-color="#13ce66"
             inactive-color="#F4F4F5"
-            :active-value="1"
-            :inactive-value="0"
             @change="changeDisable(scope.row)"
           />
         </template>
@@ -100,7 +98,7 @@
           <el-popconfirm
             title="确定删除吗？"
             style="margin-left:1rem"
-            @confirm="deleteLink(scope.row.id)"
+            @confirm="deleteLink(scope.row.linkId)"
           >
             <el-button size="mini" type="danger" slot="reference">
               删除
@@ -142,13 +140,13 @@
           <el-input style="width:250px" v-model="linkForm.linkName" />
         </el-form-item>
         <el-form-item label="链接头像">
-          <el-input style="width:250px" v-model="linkForm.linkAvatar" />
+          <el-input style="width:250px" v-model="linkForm.avatarLink" />
         </el-form-item>
         <el-form-item label="链接地址">
-          <el-input style="width:250px" v-model="linkForm.linkAddress" />
+          <el-input style="width:250px" v-model="linkForm.blogLink" />
         </el-form-item>
         <el-form-item label="链接介绍">
-          <el-input style="width:250px" v-model="linkForm.linkIntro" />
+          <el-input style="width:250px" v-model="linkForm.description" />
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -174,11 +172,11 @@ export default {
       linkIdList: [],
       linkList: [],
       linkForm: {
-        id: null,
+        linkId: null,
         linkName: "",
-        linkAvatar: "",
-        linkIntro: "",
-        linkAddress: ""
+        avatarLink: "",
+        description: "",
+        blogLink: ""
       },
       keywords: null,
       current: 1,
@@ -190,7 +188,7 @@ export default {
     selectionChange(linkList) {
       this.linkIdList = [];
       linkList.forEach(item => {
-        this.linkIdList.push(item.id);
+        this.linkIdList.push(item.linkId);
       });
     },
     searchLinks() {
@@ -206,7 +204,7 @@ export default {
       this.listLinks();
     },
     changeDisable(link) {
-      this.axios.put("/api/server/link/disable", {
+      this.axios.put("/api/server/link/admin/disable", {
         linkId: link.linkId,
         dataStatus: link.dataStatus
       });
@@ -218,32 +216,34 @@ export default {
       } else {
         param = { data: [id] };
       }
-      this.axios.delete("/api/admin/links", param).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listLinks();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.deleteFlag = false;
-      });
+      this.axios
+        .delete("/api/server/link/admin/delete", param)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listLinks();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.deleteFlag = false;
+        });
     },
     openModel(link) {
       if (link != null) {
         this.linkForm = JSON.parse(JSON.stringify(link));
         this.$refs.linkTitle.innerHTML = "修改友链";
       } else {
-        this.linkForm.id = null;
+        this.linkForm.linkId = null;
         this.linkForm.linkName = "";
-        this.linkForm.linkAvatar = "";
-        this.linkForm.linkIntro = "";
-        this.linkForm.linkAddress = "";
+        this.linkForm.avatarLink = "";
+        this.linkForm.description = "";
+        this.linkForm.blogLink = "";
         this.$refs.linkTitle.innerHTML = "添加友链";
       }
       this.addOrEdit = true;
@@ -253,33 +253,35 @@ export default {
         this.$message.error("友链名不能为空");
         return false;
       }
-      if (this.linkForm.linkAvatar.trim() == "") {
+      if (this.linkForm.avatarLink.trim() == "") {
         this.$message.error("友链头像不能为空");
         return false;
       }
-      if (this.linkForm.linkIntro.trim() == "") {
+      if (this.linkForm.description.trim() == "") {
         this.$message.error("友链介绍不能为空");
         return false;
       }
-      if (this.linkForm.linkAddress.trim() == "") {
+      if (this.linkForm.blogLink.trim() == "") {
         this.$message.error("友链地址不能为空");
         return false;
       }
-      this.axios.post("/api/admin/links", this.linkForm).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listLinks();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.addOrEdit = false;
-      });
+      this.axios
+        .post("/api/server/link/admin/saveOrUpdateFriendLink", this.linkForm)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listLinks();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.addOrEdit = false;
+        });
     },
     listLinks() {
       this.axios

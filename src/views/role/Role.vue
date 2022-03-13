@@ -97,7 +97,7 @@
           <el-popconfirm
             title="确定删除吗？"
             style="margin-left:10px"
-            @confirm="deleteRoles(scope.row.id)"
+            @confirm="deleteRoles(scope.row.rid)"
           >
             <el-button size="mini" type="text" slot="reference">
               <i class="el-icon-delete" /> 删除
@@ -232,12 +232,12 @@ export default {
     selectionChange(roleList) {
       this.roleIdList = [];
       roleList.forEach(item => {
-        this.roleIdList.push(item.id);
+        this.roleIdList.push(item.rid);
       });
     },
     listRoles() {
       this.axios
-        .get("/api/server/role/listRoles", {
+        .get("/api/server/role/admin/listRoles", {
           params: {
             currentPage: this.current,
             pageSize: this.size,
@@ -252,7 +252,7 @@ export default {
       this.axios.get("/api/server/resource/role").then(({ data }) => {
         this.resourceList = data.data;
       });
-      this.axios.get("/api/server/menu/role").then(({ data }) => {
+      this.axios.get("/api/server/menu/admin/role").then(({ data }) => {
         this.menuList = data.data;
       });
     },
@@ -263,7 +263,7 @@ export default {
       } else {
         param = { data: [id] };
       }
-      this.axios.delete("/api/admin/roles", param).then(({ data }) => {
+      this.axios.delete("/api/server/role/admin", param).then(({ data }) => {
         if (data.flag) {
           this.$notify.success({
             title: "成功",
@@ -306,21 +306,23 @@ export default {
     saveOrUpdateRoleResource() {
       this.roleForm.menuIdList = null;
       this.roleForm.resourceIdList = this.$refs.resourceTree.getCheckedKeys();
-      this.axios.post("/api/admin/role", this.roleForm).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listRoles();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.roleResource = false;
-      });
+      this.axios
+        .post("/api/server/role/admin/saveOrUpdateRole", this.roleForm)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listRoles();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.roleResource = false;
+        });
     },
     saveOrUpdateRoleMenu() {
       if (this.roleForm.roleName.trim() == "") {
@@ -335,21 +337,23 @@ export default {
       this.roleForm.menuIdList = this.$refs.menuTree
         .getCheckedKeys()
         .concat(this.$refs.menuTree.getHalfCheckedKeys());
-      this.axios.post("/api/admin/role", this.roleForm).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listRoles();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.roleMenu = false;
-      });
+      this.axios
+        .post("/api/server/role/admin/saveOrUpdateRole", this.roleForm)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listRoles();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.roleMenu = false;
+        });
     }
   }
 };

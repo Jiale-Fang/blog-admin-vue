@@ -6,20 +6,20 @@
       <!-- 条件筛选 -->
       <div style="margin-left:auto">
         <!-- 登录方式 -->
-        <el-select
-          clearable
-          v-model="loginType"
-          placeholder="请选择登录方式"
-          size="small"
-          style="margin-right:1rem"
-        >
-          <el-option
-            v-for="item in typeList"
-            :key="item.type"
-            :label="item.desc"
-            :value="item.type"
-          />
-        </el-select>
+        <!--        <el-select-->
+        <!--          clearable-->
+        <!--          v-model="loginType"-->
+        <!--          placeholder="请选择登录方式"-->
+        <!--          size="small"-->
+        <!--          style="margin-right:1rem"-->
+        <!--        >-->
+        <!--          <el-option-->
+        <!--            v-for="item in typeList"-->
+        <!--            :key="item.type"-->
+        <!--            :label="item.desc"-->
+        <!--            :value="item.type"-->
+        <!--          />-->
+        <!--        </el-select>-->
         <el-input
           v-model="keywords"
           prefix-icon="el-icon-search"
@@ -58,18 +58,18 @@
         align="center"
         width="140"
       />
-      <el-table-column
-        prop="loginType"
-        label="登录方式"
-        align="center"
-        width="80"
-      >
-        <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.loginType == 1">邮箱</el-tag>
-          <el-tag v-if="scope.row.loginType == 2">QQ</el-tag>
-          <el-tag type="danger" v-if="scope.row.loginType == 3">微博</el-tag>
-        </template>
-      </el-table-column>
+      <!--      <el-table-column-->
+      <!--        prop="loginType"-->
+      <!--        label="登录方式"-->
+      <!--        align="center"-->
+      <!--        width="80"-->
+      <!--      >-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-tag type="success" v-if="scope.row.loginType == 1">邮箱</el-tag>-->
+      <!--          <el-tag v-if="scope.row.loginType == 2">QQ</el-tag>-->
+      <!--          <el-tag type="danger" v-if="scope.row.loginType == 3">微博</el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column prop="roleList" label="用户角色" align="center">
         <template slot-scope="scope">
           <el-tag
@@ -84,7 +84,7 @@
       <el-table-column prop="isDisable" label="禁用" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.isDisable"
+            v-model="scope.row.dataStatus"
             active-color="#13ce66"
             inactive-color="#F4F4F5"
             :active-value="1"
@@ -165,8 +165,8 @@
           <el-checkbox-group v-model="roleIdList">
             <el-checkbox
               v-for="item of userRoleList"
-              :key="item.id"
-              :label="item.id"
+              :key="item.rid"
+              :label="item.rid"
             >
               {{ item.roleName }}
             </el-checkbox>
@@ -194,7 +194,7 @@ export default {
       loading: true,
       isEdit: false,
       userForm: {
-        userInfoId: null,
+        uid: null,
         nickname: ""
       },
       loginType: null,
@@ -235,23 +235,38 @@ export default {
       this.listUsers();
     },
     changeDisable(user) {
-      this.axios.put("/api/admin/users/disable", {
-        id: user.userInfoId,
-        isDisable: user.isDisable
-      });
+      this.axios
+        .put("/api/server/user/admin/disable", {
+          uid: user.uid,
+          dataStatus: user.dataStatus
+        })
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.isEdit = false;
+        });
     },
     openEditModel(user) {
       this.roleIdList = [];
       this.userForm = JSON.parse(JSON.stringify(user));
       this.userForm.roleList.forEach(item => {
-        this.roleIdList.push(item.id);
+        this.roleIdList.push(item.rid);
       });
       this.isEdit = true;
     },
     editUserRole() {
       this.userForm.roleIdList = this.roleIdList;
       this.axios
-        .put("/api/admin/users/role", this.userForm)
+        .put("/api/server/role/admin/user", this.userForm)
         .then(({ data }) => {
           if (data.flag) {
             this.$notify.success({
@@ -270,7 +285,7 @@ export default {
     },
     listUsers() {
       this.axios
-        .get("/api/server/user/adminUser", {
+        .get("/api/server/user/admin", {
           params: {
             currentPage: this.current,
             pageSize: this.size,
@@ -284,7 +299,7 @@ export default {
         });
     },
     listRoles() {
-      this.axios.get("/api/admin/users/role").then(({ data }) => {
+      this.axios.get("/api/server/role/admin/listAllRoles").then(({ data }) => {
         this.userRoleList = data.data;
       });
     }

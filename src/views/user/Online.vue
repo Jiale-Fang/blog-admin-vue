@@ -107,7 +107,7 @@ export default {
   methods: {
     listOnlineUsers() {
       this.axios
-        .get("/api/server/user/online", {
+        .get("/api/server/user/admin/online", {
           params: {
             currentPage: this.current,
             pageSize: this.size,
@@ -130,7 +130,7 @@ export default {
     },
     removeOnlineUser(user) {
       this.axios
-        .delete("/api/admin/users/" + user.userInfoId + "/online")
+        .delete(`/api/server/user/admin/online/${user.uid}`)
         .then(({ data }) => {
           if (data.flag) {
             this.$notify.success({

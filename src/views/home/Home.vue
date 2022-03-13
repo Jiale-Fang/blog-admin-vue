@@ -303,51 +303,53 @@ export default {
   },
   methods: {
     getData() {
-      this.axios.get("/api/server/blog/admin").then(({ data }) => {
-        this.viewsCount = data.data.viewsCount;
-        this.messageCount = data.data.messageCount;
-        this.userCount = data.data.userCount;
-        this.articleCount = data.data.articleCount;
-        this.articleStatisticsList = data.data.articleStatisticsList;
-        if (data.data.viewsDTOList != null) {
-          data.data.viewsDTOList.forEach(item => {
-            this.viewCount.xAxis.data.push(item.days);
-            this.viewCount.series[0].data.push(item.viewsCount);
-          });
-        }
-
-        if (data.data.typeList != null) {
-          data.data.typeList.forEach(item => {
-            this.category.series[0].data.push({
-              value: item.typeCount,
-              name: item.typeName
+      this.axios
+        .get("/api/server/blog/admin/getBlogBackInfo")
+        .then(({ data }) => {
+          this.viewsCount = data.data.viewsCount;
+          this.messageCount = data.data.messageCount;
+          this.userCount = data.data.userCount;
+          this.articleCount = data.data.articleCount;
+          this.articleStatisticsList = data.data.articleStatisticsList;
+          if (data.data.viewsDTOList != null) {
+            data.data.viewsDTOList.forEach(item => {
+              this.viewCount.xAxis.data.push(item.days);
+              this.viewCount.series[0].data.push(item.viewsCount);
             });
-            this.category.legend.data.push(item.categoryName);
-          });
-        }
+          }
 
-        if (data.data.blogRankDTOList != null) {
-          data.data.blogRankDTOList.forEach(item => {
-            this.ariticleRank.series[0].data.push(item.views);
-            this.ariticleRank.xAxis.data.push(item.title);
-          });
-        }
-
-        if (data.data.tagList != null) {
-          data.data.tagList.forEach(item => {
-            this.tagDTOList.push({
-              id: item.id,
-              name: item.tagName
+          if (data.data.typeList != null) {
+            data.data.typeList.forEach(item => {
+              this.category.series[0].data.push({
+                value: item.typeCount,
+                name: item.typeName
+              });
+              this.category.legend.data.push(item.categoryName);
             });
-          });
-        }
+          }
 
-        this.loading = false;
-      });
+          if (data.data.blogRankDTOList != null) {
+            data.data.blogRankDTOList.forEach(item => {
+              this.ariticleRank.series[0].data.push(item.views);
+              this.ariticleRank.xAxis.data.push(item.title);
+            });
+          }
+
+          if (data.data.tagList != null) {
+            data.data.tagList.forEach(item => {
+              this.tagDTOList.push({
+                id: item.id,
+                name: item.tagName
+              });
+            });
+          }
+
+          this.loading = false;
+        });
     },
     listUserArea() {
       this.axios
-        .get("/api/server/user/listUserAreas", {
+        .get("/api/server/user/admin/listUserAreas", {
           params: {
             type: this.type
           }

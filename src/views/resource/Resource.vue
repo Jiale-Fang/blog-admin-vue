@@ -160,7 +160,7 @@ export default {
       this.axios
         .get("/api/server/resource/listResources", {
           params: {
-            keywords: this.keywords
+            queryString: this.keywords
           }
         })
         .then(({ data }) => {
@@ -169,20 +169,22 @@ export default {
         });
     },
     changeResource(resource) {
-      this.axios.post("/api/admin/resources", resource).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listResources();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-      });
+      this.axios
+        .post("/api/server/resource/admin/saveOrUpdateResource", resource)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listResources();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+        });
     },
     openModel(resource) {
       if (resource != null) {
@@ -211,20 +213,22 @@ export default {
       this.addResource = true;
     },
     deleteResource(id) {
-      this.axios.delete("/api/admin/resources/" + id).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listResources();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-      });
+      this.axios
+        .delete("/api/server/resource/admin/delete/" + id)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listResources();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+        });
     },
     addOrEditResource() {
       if (this.resourceForm.resourceName.trim() == "") {
@@ -232,7 +236,7 @@ export default {
         return false;
       }
       this.axios
-        .post("/api/admin/resources", this.resourceForm)
+        .post("/api/server/resource/admin/saveOrUpdateResource", this.resourceForm)
         .then(({ data }) => {
           if (data.flag) {
             this.$notify.success({

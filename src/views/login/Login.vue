@@ -66,31 +66,31 @@ export default {
         if (valid) {
           const that = this;
           // eslint-disable-next-line no-undef
-          // var captcha = new TencentCaptcha(
-          //   this.config.TENCENT_CAPTCHA,
-          //   function(res) {
-          //     if (res.ret === 0) {
-          that.axios
-            .post("/api/server/login", that.loginForm)
-            .then(({ data }) => {
-              if (data.flag) {
-                that.$message.success(data.message);
-                // 登录后保存用户信息
-                that.$store.commit("login", data.data);
-                // 加载用户菜单
-                generaMenu();
-                that.$message.success("登录成功");
-                window.sessionStorage.setItem("token", data.code);
-                that.$router.push({ path: "/" });
-              } else {
-                that.$message.error(data.message);
+          var captcha = new TencentCaptcha(
+            this.config.TENCENT_CAPTCHA,
+            function(res) {
+              if (res.ret === 0) {
+                that.axios
+                  .post("/api/server/login", that.loginForm)
+                  .then(({ data }) => {
+                    if (data.flag) {
+                      that.$message.success(data.message);
+                      // 登录后保存用户信息
+                      that.$store.commit("login", data.data);
+                      // 加载用户菜单
+                      generaMenu();
+                      that.$message.success("登录成功");
+                      window.sessionStorage.setItem("token", data.code);
+                      that.$router.push({ path: "/" });
+                    } else {
+                      that.$message.error(data.message);
+                    }
+                  });
               }
-            });
-          //   }
-          // }
-          // );
-          // 显示验证码
-          // captcha.show();
+            }
+          );
+          // 显示验证码;
+          captcha.show();
         } else {
           return false;
         }

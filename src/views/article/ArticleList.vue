@@ -1,23 +1,7 @@
 <template>
   <el-card class="main-card">
     <div class="title">{{ this.$route.name }}</div>
-    <!-- 文章状态 -->
-    <div class="article-status-menu">
-      <span>状态</span>
-      <span @click="changeStauts('all')" :class="isActive('all')">全部</span>
-      <span @click="changeStauts('public')" :class="isActive('public')">
-        公开
-      </span>
-      <span @click="changeStauts('secret')" :class="isActive('secret')">
-        私密
-      </span>
-      <span @click="changeStauts('draft')" :class="isActive('draft')">
-        草稿箱
-      </span>
-      <span @click="changeStauts('delete')" :class="isActive('delete')">
-        回收站
-      </span>
-    </div>
+    <br />
     <!-- 表格操作 -->
     <div class="operation-container">
       <el-button
@@ -73,22 +57,22 @@
             :value="item.typeId"
           />
         </el-select>
-<!--        &lt;!&ndash; 标签 &ndash;&gt;-->
-<!--        <el-select-->
-<!--          clearable-->
-<!--          size="small"-->
-<!--          v-model="tagId"-->
-<!--          filterable-->
-<!--          placeholder="请选择标签"-->
-<!--          style="margin-right:1rem"-->
-<!--        >-->
-<!--          <el-option-->
-<!--            v-for="item in tagList"-->
-<!--            :key="item.tagId"-->
-<!--            :label="item.tagName"-->
-<!--            :value="item.tagId"-->
-<!--          />-->
-<!--        </el-select>-->
+        <!--        &lt;!&ndash; 标签 &ndash;&gt;-->
+        <!--        <el-select-->
+        <!--          clearable-->
+        <!--          size="small"-->
+        <!--          v-model="tagId"-->
+        <!--          filterable-->
+        <!--          placeholder="请选择标签"-->
+        <!--          style="margin-right:1rem"-->
+        <!--        >-->
+        <!--          <el-option-->
+        <!--            v-for="item in tagList"-->
+        <!--            :key="item.tagId"-->
+        <!--            :label="item.tagName"-->
+        <!--            :value="item.tagId"-->
+        <!--          />-->
+        <!--        </el-select>-->
         <!-- 文章名 -->
         <el-input
           clearable
@@ -173,12 +157,7 @@
         </template>
       </el-table-column>
       <!-- 文章点赞量 -->
-      <el-table-column
-        prop="thumbs"
-        label="点赞量"
-        width="70"
-        align="center"
-      >
+      <el-table-column prop="thumbs" label="点赞量" width="70" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.thumbs">
             {{ scope.row.thumbs }}
@@ -190,7 +169,7 @@
       <el-table-column prop="type" label="类型" width="80" align="center">
         <template slot-scope="scope">
           <el-tag :type="articleType(scope.row.shareStatement).tagType">
-            {{ (scope.row.shareStatement) }}
+            {{ scope.row.shareStatement }}
           </el-tag>
         </template>
       </el-table-column>
@@ -206,34 +185,34 @@
           {{ scope.row.createTime | date }}
         </template>
       </el-table-column>
-<!--      &lt;!&ndash; 文章置顶 &ndash;&gt;-->
-<!--      <el-table-column prop="isTop" label="置顶" width="80" align="center">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-switch-->
-<!--            v-model="scope.row.isTop"-->
-<!--            active-color="#13ce66"-->
-<!--            inactive-color="#F4F4F5"-->
-<!--            :disabled="scope.row.isDelete == 1"-->
-<!--            :active-value="1"-->
-<!--            :inactive-value="0"-->
-<!--            @change="changeTop(scope.row)"-->
-<!--          />-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      &lt;!&ndash; 文章置顶 &ndash;&gt;-->
+      <!--      <el-table-column prop="isTop" label="置顶" width="80" align="center">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-switch-->
+      <!--            v-model="scope.row.isTop"-->
+      <!--            active-color="#13ce66"-->
+      <!--            inactive-color="#F4F4F5"-->
+      <!--            :disabled="scope.row.isDelete == 1"-->
+      <!--            :active-value="1"-->
+      <!--            :inactive-value="0"-->
+      <!--            @change="changeTop(scope.row)"-->
+      <!--          />-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <!-- 列操作 -->
       <el-table-column label="操作" align="center" width="150">
         <template slot-scope="scope">
           <el-button
             type="primary"
             size="mini"
-            @click="editArticle(scope.row.id)"
+            @click="editArticle(scope.row.blogId)"
           >
             编辑
           </el-button>
           <el-popconfirm
             title="确定删除吗？"
             style="margin-left:10px"
-            @confirm="updateArticleDelete(scope.row.id)"
+            @confirm="updateArticleDelete(scope.row.blogId)"
             v-if="scope.row.isDelete == 0"
           >
             <el-button size="mini" type="danger" slot="reference">
@@ -252,7 +231,7 @@
           <el-popconfirm
             style="margin-left:10px"
             title="确定彻底删除吗？"
-            @confirm="deleteArticles(scope.row.id)"
+            @confirm="deleteArticles(scope.row.blogId)"
           >
             <el-button size="mini" type="danger" slot="reference">
               删除
@@ -281,7 +260,7 @@
       <div style="font-size:1rem">是否删除选中项？</div>
       <div slot="footer">
         <el-button @click="updateIsDelete = false">取 消</el-button>
-        <el-button type="primary" @click="updateArticleDelete(null)">
+        <el-button type="primary" @click="deleteArticles(null)">
           确 定
         </el-button>
       </div>
@@ -344,7 +323,7 @@ export default {
     selectionChange(articleList) {
       this.articleIdList = [];
       articleList.forEach(item => {
-        this.articleIdList.push(item.id);
+        this.articleIdList.push(item.blogId);
       });
     },
     searchArticles() {
@@ -362,7 +341,7 @@ export default {
         param.idList = this.articleIdList;
       }
       param.isDelete = this.isDelete == 0 ? 1 : 0;
-      this.axios.put("/api/admin/articles", param).then(({ data }) => {
+      this.axios.put("/api/server/admin/articles", param).then(({ data }) => {
         if (data.flag) {
           this.$notify.success({
             title: "成功",
@@ -379,27 +358,30 @@ export default {
       });
     },
     deleteArticles(id) {
+      this.updateIsDelete = false;
       var param = {};
       if (id == null) {
         param = { data: this.articleIdList };
       } else {
         param = { data: [id] };
       }
-      this.axios.delete("/api/admin/articles", param).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listArticles();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.remove = false;
-      });
+      this.axios
+        .delete("/api/server/blog/admin/delete", param)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listArticles();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.remove = false;
+        });
     },
     sizeChange(size) {
       this.size = size;
@@ -436,7 +418,7 @@ export default {
     },
     changeTop(article) {
       this.axios
-        .put("/api/admin/articles/top", {
+        .put("/api/server/admin/articles/top", {
           id: article.id,
           isTop: article.isTop
         })
@@ -457,7 +439,7 @@ export default {
     },
     listArticles() {
       this.axios
-        .get("/api/server/blog/adminBlogPage", {
+        .get("/api/server/blog/admin/blogPage", {
           params: {
             currentPage: this.current,
             pageSize: this.size,

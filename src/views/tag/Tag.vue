@@ -176,7 +176,7 @@ export default {
         param = { data: [id] };
       }
       this.axios
-        .delete("/api/server/home/getTagCount", param)
+        .delete("/api/server/tag/admin/delete", param)
         .then(({ data }) => {
           if (data.flag) {
             this.$notify.success({
@@ -199,7 +199,7 @@ export default {
         pageSize: this.size,
         queryString: this.keywords
       };
-      this.axios.post("/api/server/tag/adminTag", param).then(({ data }) => {
+      this.axios.post("/api/server/tag/admin/tagList", param).then(({ data }) => {
         this.tagList = data.data.records;
         this.count = data.data.total;
         this.loading = false;
@@ -221,20 +221,22 @@ export default {
         this.$message.error("标签名不能为空");
         return false;
       }
-      this.axios.post("/api/admin/tags", this.tagForm).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listTags();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-      });
+      this.axios
+        .post("/api/server/tag/admin/saveOrUpdate", this.tagForm)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listTags();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+        });
       this.addOrEdit = false;
     }
   }

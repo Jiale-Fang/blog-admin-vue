@@ -283,7 +283,7 @@ export function generaMenu() {
   // // 添加菜单到路由
   // router.addRoutes(a);
   // 查询用户菜单
-  axios.get("/api/server/menu/listUserMenus").then(({ data }) => {
+  axios.get("/api/server/menu/admin/listUserMenus").then(({ data }) => {
     if (data.flag) {
       var userMenuList = data.data;
       userMenuList.forEach(item => {
@@ -305,7 +305,7 @@ export function generaMenu() {
       // 添加菜单到路由
       router.addRoutes(userMenuList);
     } else {
-      Vue.prototype.$message.error(data.message);
+      Vue.prototype.$message.error("请先登录");
       router.push({ path: "/login" });
     }
   });

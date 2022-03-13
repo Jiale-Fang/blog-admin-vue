@@ -1,27 +1,28 @@
 <template>
   <el-card class="main-card">
     <div class="title">{{ this.$route.name }}</div>
-    <div class="review-menu">
-      <span>状态</span>
-      <span
-        @click="changeReview(null)"
-        :class="isReview == null ? 'active-review' : 'review'"
-      >
-        全部
-      </span>
-      <span
-        @click="changeReview(1)"
-        :class="isReview == 1 ? 'active-review' : 'review'"
-      >
-        正常
-      </span>
-      <span
-        @click="changeReview(0)"
-        :class="isReview == 0 ? 'active-review' : 'review'"
-      >
-        审核中
-      </span>
-    </div>
+    <!--    <div class="review-menu">-->
+    <!--      <span>状态</span>-->
+    <!--      <span-->
+    <!--        @click="changeReview(null)"-->
+    <!--        :class="isReview == null ? 'active-review' : 'review'"-->
+    <!--      >-->
+    <!--        全部-->
+    <!--      </span>-->
+    <!--      <span-->
+    <!--        @click="changeReview(1)"-->
+    <!--        :class="isReview == 1 ? 'active-review' : 'review'"-->
+    <!--      >-->
+    <!--        正常-->
+    <!--      </span>-->
+    <!--      <span-->
+    <!--        @click="changeReview(0)"-->
+    <!--        :class="isReview == 0 ? 'active-review' : 'review'"-->
+    <!--      >-->
+    <!--        审核中-->
+    <!--      </span>-->
+    <!--    </div>-->
+    <br />
     <!-- 表格操作 -->
     <div class="operation-container">
       <el-button
@@ -33,30 +34,21 @@
       >
         批量删除
       </el-button>
-      <el-button
-        type="success"
-        size="small"
-        icon="el-icon-success"
-        :disabled="commentIdList.length == 0"
-        @click="updateCommentReview(null)"
-      >
-        批量通过
-      </el-button>
       <!-- 数据筛选 -->
       <div style="margin-left:auto">
-<!--        <el-select-->
-<!--          v-model="type"-->
-<!--          placeholder="请选择来源"-->
-<!--          size="small"-->
-<!--          style="margin-right:1rem"-->
-<!--        >-->
-<!--          <el-option-->
-<!--            v-for="item in options"-->
-<!--            :key="item.value"-->
-<!--            :label="item.label"-->
-<!--            :value="item.value"-->
-<!--          />-->
-<!--        </el-select>-->
+        <!--        <el-select-->
+        <!--          v-model="type"-->
+        <!--          placeholder="请选择来源"-->
+        <!--          size="small"-->
+        <!--          style="margin-right:1rem"-->
+        <!--        >-->
+        <!--          <el-option-->
+        <!--            v-for="item in options"-->
+        <!--            :key="item.value"-->
+        <!--            :label="item.label"-->
+        <!--            :value="item.value"-->
+        <!--          />-->
+        <!--        </el-select>-->
         <el-input
           v-model="keywords"
           prefix-icon="el-icon-search"
@@ -138,20 +130,20 @@
           {{ scope.row.createTime | date }}
         </template>
       </el-table-column>
-      <!-- 状态 -->
-      <el-table-column prop="isReview" label="状态" width="80" align="center">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.isReview == 0" type="warning">审核中</el-tag>
-          <el-tag v-if="scope.row.isReview == 1" type="success">正常</el-tag>
-        </template>
-      </el-table-column>
-      <!-- 来源 -->
-      <el-table-column label="来源" align="center" width="100">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.articleTitle">文章</el-tag>
-          <el-tag v-else type="warning">友链</el-tag>
-        </template>
-      </el-table-column>
+      <!--      &lt;!&ndash; 状态 &ndash;&gt;-->
+      <!--      <el-table-column prop="isReview" label="状态" width="80" align="center">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-tag v-if="scope.row.isReview == 0" type="warning">审核中</el-tag>-->
+      <!--          <el-tag v-if="scope.row.isReview == 1" type="success">正常</el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      &lt;!&ndash; 来源 &ndash;&gt;-->
+      <!--      <el-table-column label="来源" align="center" width="100">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-tag v-if="scope.row.articleTitle">文章</el-tag>-->
+      <!--          <el-tag v-else type="warning">友链</el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <!-- 列操作 -->
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
@@ -167,7 +159,7 @@
           <el-popconfirm
             style="margin-left:10px"
             title="确定删除吗？"
-            @confirm="deleteComments(scope.row.id)"
+            @confirm="deleteComments(scope.row.commentId)"
           >
             <el-button size="mini" type="danger" slot="reference">
               删除
@@ -237,7 +229,7 @@ export default {
     selectionChange(commentList) {
       this.commentIdList = [];
       commentList.forEach(item => {
-        this.commentIdList.push(item.id);
+        this.commentIdList.push(item.commentId);
       });
     },
     searchComments() {
@@ -285,21 +277,23 @@ export default {
       } else {
         param = { data: [id] };
       }
-      this.axios.delete("/api/admin/comments", param).then(({ data }) => {
-        if (data.flag) {
-          this.$notify.success({
-            title: "成功",
-            message: data.message
-          });
-          this.listComments();
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: data.message
-          });
-        }
-        this.remove = false;
-      });
+      this.axios
+        .delete("/api/server/comment/admin/delete", param)
+        .then(({ data }) => {
+          if (data.flag) {
+            this.$notify.success({
+              title: "成功",
+              message: data.message
+            });
+            this.listComments();
+          } else {
+            this.$notify.error({
+              title: "失败",
+              message: data.message
+            });
+          }
+          this.remove = false;
+        });
     },
     listComments() {
       const param = {
@@ -308,7 +302,7 @@ export default {
         queryString: this.keywords
       };
       this.axios
-        .post("/api/server/comment/adminComments", param)
+        .post("/api/server/comment/admin/commentPage", param)
         .then(({ data }) => {
           this.commentList = data.data.records;
           this.count = data.data.total;
