@@ -64,14 +64,14 @@
       <el-table-column prop="blogLink" label="链接地址" align="center" />
       <el-table-column prop="description" label="链接介绍" align="center" />
       <el-table-column
-        prop="dataStatus"
+        prop="status"
         label="是否展示"
         align="center"
         width="100"
       >
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.dataStatus"
+            v-model="scope.row.status"
             active-color="#13ce66"
             inactive-color="#F4F4F5"
             @change="changeDisable(scope.row)"
@@ -206,7 +206,7 @@ export default {
     changeDisable(link) {
       this.axios.put("/api/server/link/admin/disable", {
         linkId: link.linkId,
-        dataStatus: link.dataStatus
+        status: link.status
       });
     },
     deleteLink(id) {

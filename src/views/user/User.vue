@@ -58,18 +58,18 @@
         align="center"
         width="140"
       />
-      <!--      <el-table-column-->
-      <!--        prop="loginType"-->
-      <!--        label="登录方式"-->
-      <!--        align="center"-->
-      <!--        width="80"-->
-      <!--      >-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <el-tag type="success" v-if="scope.row.loginType == 1">邮箱</el-tag>-->
-      <!--          <el-tag v-if="scope.row.loginType == 2">QQ</el-tag>-->
-      <!--          <el-tag type="danger" v-if="scope.row.loginType == 3">微博</el-tag>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
+      <el-table-column
+        prop="loginType"
+        label="登录方式"
+        align="center"
+        width="80"
+      >
+        <template slot-scope="scope">
+          <el-tag type="success" v-if="scope.row.loginType == 1">账号</el-tag>
+          <el-tag v-if="scope.row.loginType == 2">QQ</el-tag>
+          <el-tag type="danger" v-if="scope.row.loginType == 3">微博</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="roleList" label="用户角色" align="center">
         <template slot-scope="scope">
           <el-tag
@@ -84,7 +84,7 @@
       <el-table-column prop="isDisable" label="禁用" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.dataStatus"
+            v-model="scope.row.status"
             active-color="#13ce66"
             inactive-color="#F4F4F5"
             :active-value="1"
@@ -238,7 +238,7 @@ export default {
       this.axios
         .put("/api/server/user/admin/disable", {
           uid: user.uid,
-          dataStatus: user.dataStatus
+          status: user.status
         })
         .then(({ data }) => {
           if (data.flag) {
@@ -285,7 +285,7 @@ export default {
     },
     listUsers() {
       this.axios
-        .get("/api/server/user/admin", {
+        .get("/api/server/user/admin/userList", {
           params: {
             currentPage: this.current,
             pageSize: this.size,

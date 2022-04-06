@@ -75,12 +75,13 @@ export default {
                   .then(({ data }) => {
                     if (data.flag) {
                       that.$message.success(data.message);
+                      window.sessionStorage.setItem("token", data.data.token);
+                      that.$store.state.token = data.data.token;
+                      that.$store.commit("login", data.data.user);
                       // 登录后保存用户信息
-                      that.$store.commit("login", data.data);
                       // 加载用户菜单
                       generaMenu();
                       that.$message.success("登录成功");
-                      window.sessionStorage.setItem("token", data.code);
                       that.$router.push({ path: "/" });
                     } else {
                       that.$message.error(data.message);
