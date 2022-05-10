@@ -75,7 +75,7 @@
           <el-popconfirm
             title="确定删除吗？"
             style="margin-left:1rem"
-            @confirm="deleteTag(scope.row.id)"
+            @confirm="deleteTag(scope.row.tagId)"
           >
             <el-button size="mini" type="danger" slot="reference">
               删除
@@ -153,7 +153,7 @@ export default {
     selectionChange(tagList) {
       this.tagIdList = [];
       tagList.forEach(item => {
-        this.tagIdList.push(item.id);
+        this.tagIdList.push(item.tagId);
       });
     },
     searchTags() {

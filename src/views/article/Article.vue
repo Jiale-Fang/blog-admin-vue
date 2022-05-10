@@ -140,12 +140,12 @@
           </el-popover>
         </el-form-item>
         <el-form-item label="文章类型">
-          <el-select v-model="article.shareStatement" placeholder="请选择类型">
+          <el-select v-model="article.copyright" placeholder="请选择类型">
             <el-option
-              v-for="item in shareStatementList"
-              :key="item.value"
+              v-for="item in copyrightList"
+              :key="item.copyright"
               :label="item.label"
-              :value="item.label"
+              :value="item.copyright"
             />
           </el-select>
         </el-form-item>
@@ -162,7 +162,7 @@
           <el-upload
             class="upload-cover"
             drag
-            action="serverApi/oss/articleImage"
+            action="serverApi/file/articleImage"
             multiple
             :before-upload="beforeUpload"
             :on-success="uploadCover"
@@ -208,14 +208,18 @@ export default {
       tagName: "",
       typeList: [],
       tagNameList: [],
-      shareStatementList: [
+      copyrightList: [
         {
-          value: 1,
+          copyright: 1,
           label: "原创"
         },
         {
-          value: 2,
+          copyright: 2,
           label: "转载"
+        },
+        {
+          copyright: 3,
+          label: "翻译"
         }
       ],
       article: {
@@ -226,7 +230,7 @@ export default {
         typeName: null,
         tagNameList: [],
         description: "",
-        shareStatement: "原创",
+        copyright: "",
         flag: "发布"
         // originalUrl: "",
         // isTop: 0,
@@ -241,11 +245,9 @@ export default {
       const arr = path.split("/");
       const articleId = arr[2];
       if (articleId) {
-        this.axios
-          .get("/api/server/blog/getById/" + articleId)
-          .then(({ data }) => {
-            this.article = data.data;
-          });
+        this.axios.get("/api/server/blog/" + articleId).then(({ data }) => {
+          this.article = data.data;
+        });
       } else {
         const article = sessionStorage.getItem("article");
         if (article) {
@@ -297,7 +299,7 @@ export default {
       if (file.size / 1024 < this.config.UPLOAD_SIZE) {
         formdata.append("file", file);
         this.axios
-          .post("/serverApi/oss/articleImage", formdata)
+          .post("/serverApi/file/articleImage", formdata)
           .then(({ data }) => {
             this.$refs.md.$img2Url(pos, data.data.url);
           });
@@ -311,7 +313,7 @@ export default {
               new window.File([res], file.name, { type: file.type })
             );
             this.axios
-              .post("/serverApi/oss/articleImage", formdata)
+              .post("/serverApi/file/articleImage", formdata)
               .then(({ data }) => {
                 this.$refs.md.$img2Url(pos, data.data.url);
               });

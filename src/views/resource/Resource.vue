@@ -206,7 +206,6 @@ export default {
       this.addResource = true;
     },
     openAddResourceModel(resource) {
-      console.log(resource);
       this.resourceForm = {};
       this.resourceForm.parentId = resource.id;
       this.$refs.resourceTitle.innerHTML = "添加资源";

@@ -313,7 +313,7 @@ export default {
           this.articleStatisticsList = data.data.articleStatisticsList;
           if (data.data.viewsDTOList != null) {
             data.data.viewsDTOList.forEach(item => {
-              this.viewCount.xAxis.data.push(item.days);
+              this.viewCount.xAxis.data.push(item.day);
               this.viewCount.series[0].data.push(item.viewsCount);
             });
           }

@@ -25,7 +25,6 @@ export function generaMenu() {
       });
       // 添加侧边栏菜单
       store.commit("saveUserMenuList", userMenuList);
-      console.log(JSON.stringify(userMenuList))
       // 添加菜单到路由
       router.addRoutes(userMenuList);
     } else {

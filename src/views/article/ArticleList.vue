@@ -29,16 +29,16 @@
         <!-- 文章类型 -->
         <el-select
           clearable
-          v-model="shareStatement"
+          v-model="copyright"
           placeholder="请选择文章类型"
           size="small"
           style="margin-right:1rem"
         >
           <el-option
-            v-for="item in shareStatementList"
+            v-for="item in copyrightList"
             :key="item.value"
             :label="item.label"
-            :value="item.label"
+            :value="item.value"
           />
         </el-select>
         <!-- 分类 -->
@@ -57,22 +57,22 @@
             :value="item.typeId"
           />
         </el-select>
-        <!--        &lt;!&ndash; 标签 &ndash;&gt;-->
-        <!--        <el-select-->
-        <!--          clearable-->
-        <!--          size="small"-->
-        <!--          v-model="tagId"-->
-        <!--          filterable-->
-        <!--          placeholder="请选择标签"-->
-        <!--          style="margin-right:1rem"-->
-        <!--        >-->
-        <!--          <el-option-->
-        <!--            v-for="item in tagList"-->
-        <!--            :key="item.tagId"-->
-        <!--            :label="item.tagName"-->
-        <!--            :value="item.tagId"-->
-        <!--          />-->
-        <!--        </el-select>-->
+        <!-- 标签 -->
+        <el-select
+          clearable
+          size="small"
+          v-model="tagId"
+          filterable
+          placeholder="请选择标签"
+          style="margin-right:1rem"
+        >
+          <el-option
+            v-for="item in tagList"
+            :key="item.tagId"
+            :label="item.tagName"
+            :value="item.tagId"
+          />
+        </el-select>
         <!-- 文章名 -->
         <el-input
           clearable
@@ -168,8 +168,8 @@
       <!-- 文章类型 -->
       <el-table-column prop="type" label="类型" width="80" align="center">
         <template slot-scope="scope">
-          <el-tag :type="articleType(scope.row.shareStatement).tagType">
-            {{ scope.row.shareStatement }}
+          <el-tag :type="articleType(scope.row.copyright).tagType">
+            {{ articleType(scope.row.copyright).name }}
           </el-tag>
         </template>
       </el-table-column>
@@ -293,7 +293,7 @@ export default {
       loading: true,
       updateIsDelete: false,
       remove: false,
-      shareStatementList: [
+      copyrightList: [
         {
           value: 1,
           label: "原创"
@@ -301,6 +301,10 @@ export default {
         {
           value: 2,
           label: "转载"
+        },
+        {
+          value: 3,
+          label: "翻译"
         }
       ],
       activeStatus: "all",
@@ -309,7 +313,7 @@ export default {
       typeList: [],
       tagList: [],
       keywords: null,
-      shareStatement: null,
+      copyright: null,
       typeId: null,
       tagId: null,
       isDelete: 0,
@@ -444,7 +448,7 @@ export default {
             currentPage: this.current,
             pageSize: this.size,
             queryString: this.keywords,
-            shareStatement: this.shareStatement,
+            copyright: this.copyright,
             typeId: this.typeId,
             tagId: this.tagId
           }
@@ -467,7 +471,7 @@ export default {
     }
   },
   watch: {
-    shareStatement() {
+    copyright() {
       this.current = 1;
       this.listArticles();
     },
